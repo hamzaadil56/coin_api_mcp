@@ -44,7 +44,7 @@ Clone this repository and build and install the program with your default Python
 git clone https://github.com/longmans/coin_api_mcp.git
 cd coin_api_mcp
 uv build
-uv pip install .
+uv sync
 ```
 
 After installation, you can run it as a script using:
