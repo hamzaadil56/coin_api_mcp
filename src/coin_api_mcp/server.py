@@ -11,7 +11,7 @@ import json
 
 API_BASE = "pro-api.coinmarketcap.com"
 API_KEY = None
-
+DEFI_API_KEY = None
 
 
 server = Server("coin-api")
@@ -220,14 +220,230 @@ async def handle_list_tools() -> list[types.Tool]:
                 "required": [],
             },
         ),
+        types.Tool(
+            name="get-protocols",
+            description='''List all protocols along with their tvl(total value locked).''',
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "One or more comma-separated cryptocurrency CoinMarketCap IDs. Example: 1,2",
+                    },
+                    "slug": {
+                        "type": "string",
+                        "description": "Alternatively pass a comma-separated list of cryptocurrency slugs. Example: \"bitcoin,ethereum\"",
+                    },
+                    "symbol": {
+                        "type": "string",
+                        "description": "Alternatively pass one or more comma-separated cryptocurrency symbols. Example: \"BTC,ETH\"",
+                    },
+                    "convert": {
+                        "type": "string",
+                        "description": "Optionally calculate market quotes in up to 120 currencies at once by passing a comma-separated list of cryptocurrency or fiat currency symbols.",
+                    },
+                    "convert_id": {
+                        "type": "string",
+                        "description": "Optionally calculate market quotes by CoinMarketCap ID instead of symbol. This option is identical to convert outside of ID format.",
+                    },
+                    "aux": {
+                        "type": "string",
+                        "description": "\"num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,is_active,is_fiat\"Optionally specify a comma-separated list of supplemental data fields to return.",
+                    },
+                    "skip_invalid": {
+                        "type": "boolean",
+                        "description": "Pass true to relax request validation rules.",
+                        "default": False,
+                    },
+                },
+                "required": [],
+            },
+        ),
+        types.Tool(
+            name="listing-protocols",
+            description="Get detailed information about a specific protocol including its TVL, supported chains, and other metadata",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "The unique identifier of the protocol",
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the protocol",
+                    },
+                    "symbol": {
+                        "type": "string",
+                        "description": "The symbol associated with the protocol",
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "The official website URL of the protocol",
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "A detailed description of the protocol",
+                    },
+                    "chain": {
+                        "type": "string",
+                        "description": "The primary chain the protocol operates on",
+                    },
+                    "logo": {
+                        "type": "string",
+                        "description": "URL to the protocol's logo image",
+                    },
+                    "audits": {
+                        "type": "string",
+                        "description": "Number of security audits performed",
+                    },
+                    "audit_note": {
+                        "type": ["string", "null"],
+                        "description": "Additional notes about protocol audits",
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "The category of the protocol (e.g., CEX, DEX, Lending)",
+                    },
+                    "chains": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of blockchain networks supported by the protocol",
+                    },
+                    "twitter": {
+                        "type": "string",
+                        "description": "Twitter handle of the protocol",
+                    },
+                    "forkedFrom": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of protocols this one was forked from",
+                    },
+                    "oracles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of oracle services used by the protocol",
+                    },
+                    "listedAt": {
+                        "type": "integer",
+                        "description": "Unix timestamp when the protocol was first listed",
+                    },
+                    "methodology": {
+                        "type": "string",
+                        "description": "Description of how protocol data is collected and calculated",
+                    },
+                    "slug": {
+                        "type": "string",
+                        "description": "URL-friendly identifier for the protocol",
+                    },
+                    "tvl": {
+                        "type": "number",
+                        "description": "Total Value Locked in the protocol across all chains",
+                    },
+                    "chainTvls": {
+                        "type": "object",
+                        "description": "Breakdown of TVL by individual chains",
+                        "additionalProperties": {
+                            "type": "number"
+                        }
+                    },
+                    "change_1h": {
+                        "type": "number",
+                        "description": "Percentage change in TVL over the last hour",
+                    },
+                    "change_1d": {
+                        "type": "number",
+                        "description": "Percentage change in TVL over the last 24 hours",
+                    },
+                    "change_7d": {
+                        "type": "number",
+                        "description": "Percentage change in TVL over the last 7 days",
+                    },
+                    "tokenBreakdowns": {
+                        "type": "object",
+                        "description": "Breakdown of protocol's token distributions",
+                        "additionalProperties": {
+                            "type": "object"
+                        }
+                    },
+                    "mcap": {
+                        "type": ["number", "null"],
+                        "description": "Market capitalization of the protocol's token",
+                    }
+                },
+                "required": []
+            }
+        ),
+        types.Tool(
+            name="get-protocol-tvl",
+            description="Fetches the Total Value Locked (TVL) for a specific protocol.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "protocol": {
+                        "type": "string",
+                        "description": "The URL-friendly identifier for the protocol.",
+                    },
+                },
+                "required": ["protocol"],
+            },
+        ),
+        types.Tool(
+            name="get-apr",
+            description="Fetches the Annual Percentage Rate for a specific protocol.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "liquidStakingId": {
+                        "type": "string",
+                        "description": "ID for liquid staking. This ID is required to get the APR for the protocol",
+                    },
+                },
+                "required": ["liquidStakingId"],
+            },
+        ),
     ]
 
 
 async def make_coinmarketcap_request(client: httpx.AsyncClient, url: str) -> dict[str, Any] | None:
     """Make a request to the CoinMarketCap API with proper error handling."""
     headers = {
-    'Accepts': 'application/json',
-    'X-CMC_PRO_API_KEY': API_KEY,
+        'Accepts': 'application/json',
+        'X-CMC_PRO_API_KEY': API_KEY,
+    }
+    try:
+        response = await client.get(url, headers=headers, timeout=10.0)
+        response.raise_for_status()
+        return response.json()
+    except Exception:
+        return None
+
+
+async def make_defillama_request(client: httpx.AsyncClient, url: str) -> dict[str, Any] | None:
+    """Make a request to the DeFi Llama API with proper error handling."""
+    headers = {
+        'accept': '*/*',
+    }
+    try:
+        response = await client.get(url, headers=headers, timeout=10.0)
+        response.raise_for_status()
+        return response.json()
+    except Exception:
+        return None
+
+
+async def make_expand_network_request(client: httpx.AsyncClient, url: str) -> dict[str, Any] | None:
+    """Make a request to the Expand Network API with proper error handling."""
+    headers = {
+        'accept': '*/*',
+        'X-API-Key': DEFI_API_KEY,
+
     }
     try:
         response = await client.get(url, headers=headers, timeout=10.0)
@@ -247,6 +463,9 @@ async def handle_call_tool(
     - listing-coins: fetches a list of all cryptocurrencies.
     - get-coin-quotes: fetches quotes for a specific cryptocurrency.
     - get-coin-info: fetches information for a specific cryptocurrency.
+    - listing-protocols : fetches a list of all protocols along with their tvl. 
+    - get-protocol-tvl : fetches a tvl for the particular protocol.
+    - get-apr : fetches APR for the particular protocol.
     """
 
     if name == "listing-coins":
@@ -353,15 +572,81 @@ async def handle_call_tool(
                     text=json.dumps(coin_quotes_data)
                 )
             ]
+    elif name == "listing-protocols":
+
+        async with httpx.AsyncClient() as client:
+            protocols_url = "https://api.llama.fi/protocols"
+
+            protocols_data = await make_defillama_request(client, protocols_url)
+
+            if not protocols_data:
+                return [types.TextContent(type="text", text="Failed to retrieve protocols data")]
+
+            return [
+                types.TextContent(
+                    type="text",
+                    text=json.dumps(protocols_data)
+                )
+            ]
+    elif name == "get-protocol-tvl":
+        request_data = {}
+        if arguments is not None:
+            condi_keys = [
+                "protocol",
+            ]
+
+            for key in arguments.keys():
+                if key in condi_keys:
+                    request_data[key] = arguments[key]
+
+        async with httpx.AsyncClient() as client:
+            protocols_url = f"https://api.llama.fi/tvl/{request_data["protocol"]}"
+
+            protocols_data = await make_defillama_request(client, protocols_url)
+
+            if not protocols_data:
+                return [types.TextContent(type="text", text="Failed to retrieve protocols tvl data")]
+
+            return [
+                types.TextContent(
+                    type="text",
+                    text=json.dumps(protocols_data)
+                )
+            ]
+    elif name == "get-apr":
+        request_data = {}
+        if arguments is not None:
+            condi_keys = [
+                "liquidStakingId",
+            ]
+
+            for key in arguments.keys():
+                if key in condi_keys:
+                    request_data[key] = arguments[key]
+
+        async with httpx.AsyncClient() as client:
+            protocols_url = f"https://api.expand.network/liquidstaking/getapr?liquidStakingId={request_data['liquidStakingId']}"
+
+            protocols_data = await make_expand_network_request(client, protocols_url)
+
+            if not protocols_data:
+                return [types.TextContent(type="text", text="Failed to retrieve protocols APR data.")]
+
+            return [
+                types.TextContent(
+                    type="text",
+                    text=json.dumps(protocols_data)
+                )
+            ]
     else:
         raise ValueError(f"Unknown tool: {name}")
 
 
-
-
-async def main(api_key: str):
+async def main(api_key: str, defi_api_key: str):
     global API_KEY
     API_KEY = api_key
+    global DEFI_API_KEY
+    DEFI_API_KEY = defi_api_key
     # Run the server using stdin/stdout streams
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await server.run(
@@ -379,6 +664,6 @@ async def main(api_key: str):
 
 # This is needed if you'd like to connect to a custom client
 if __name__ == "__main__":
-    #get api key from coinmarketcap
+    # get api key from coinmarketcap
     api_key = "xxxxxxx"
     asyncio.run(main(api_key))
