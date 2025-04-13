@@ -82,13 +82,18 @@ Add to your Claude settings:
 ```json
 "mcpServers": {
   "coin_api": {
-    "command": "python",
-    "args": ["-m", "coin_api_mcp"]
-  },
-  "env": {
-        "COINMARKETCAP_API_KEY": "your_api_key_here"
-  }
-}
+			"command": "uv",
+			"args": [
+				"--directory",
+				"C:\\Users\\Hamza\\Documents\\CODING FILES\\coin_api_mcp",
+				"run",
+				"coin-api"
+			],
+			"env": {
+				"COINMARKETCAP_API_KEY": "86dea968-7a44-4922-8e4e-159c184c1ca1",
+				"EXPAND_NETWORK_API_KEY": "gBhSQfVg1b7qNd24RALe46PhbtvMmHKs7eOo1Xxp"
+			}
+		}
 ```
 </details>
 
